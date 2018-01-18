@@ -4,7 +4,7 @@
         typeof define === 'function' && define.amd ? define(factory) :
         global.Homer = factory();
 })(this, function () {
-    var PLACE = ' ',
+    var SPACE = ' ',
         TOP, BOTTOM,
         DELAY = 300,
         DURATION = 4000,
@@ -33,11 +33,54 @@
         }
     }
 
-    function ifObject(obj) {
+    function isObject(obj) {
         return !!obj && [].toString.call(obj).slice(8, -1).toLowerCase() == 'object'
     }
 
-    function formatBoxesTop(exclude) {
+    //compatibility for IE9 
+    function addClass(el, cls) {
+        if (!el || !cls || !(cls = cls.trim())) return false;
+        if (el.classList) {
+            if (cls.indexOf(SPACE) > -1) {
+                cls.split(/\s+/).forEach(function (item) {
+                    el.classList.add(item);
+                })
+            } else {
+                el.classList.add(cls);
+            }
+        } else {
+            var tempClass = SPACE + (el.getAttribute('class') || '').trim() + SPACE;
+            if (tempClass.indexOf(SPACE + cls + SPACE) < 0) {
+                el.setAttribute('class', (tempClass + cls.trim()));
+            }
+        }
+    }
+    function removeClass(el, cls) {
+        if (!el || !cls || !(cls = cls.trim())) return false;
+        if (el.classList) {
+            if (cls.indexOf(SPACE) > -1) {
+                cls.split(/\s+/).forEach(function (item) {
+                    el.classList.remove(item);
+                })
+            } else {
+                el.classList.remove(cls);
+            }
+            if (!el.classList.length) el.removeAttribute('class');
+        } else {
+            var tempClass = SPACE + (el.getAttribute('class') || '').trim() + SPACE;
+            cls = SPACE + cls + SPACE;
+            while (tempClass.indexOf(cls) > -1) {
+                tempClass = tempClass.replace(cls, ' ');
+            }
+            if (tempClass) {
+                el.setAttribute('class', tempClass);
+            } else {
+                el.removeAttribute('class');
+            }
+
+        }
+    }
+    function fixBoxOffset(exclude) {
         var boxes = _slice.call($$('.notification'));
         if (exclude) {
             boxes.splice(boxes.indexOf(exclude), 1);
@@ -72,23 +115,40 @@
         }
     }
 
+    function buildNoti(title, content) {
+        if (!title && !content) return false;
+        if (title && !content) {
+            content = title;
+            title = '';
+        }
+        // <div class="notification">
+        //     <div class="notification__group">
+        //         <div class="iconfont icon-close notification__closeBtn"></div>
+        //         <h2 class="notification__title">这是标题阿斯达岁的萨德阿萨德阿萨德阿萨德阿萨德</h2>
+        //         <div class="notification__content">
+        //                 的萨德阿萨德阿萨的萨德阿萨德阿萨的萨德阿萨德阿萨的萨德阿萨德阿萨的萨德阿萨德阿萨的萨德阿萨德阿萨的萨德阿萨德阿萨的萨德阿萨德阿萨的萨德阿萨德阿萨的萨德阿萨德阿萨
+        //         </div>
+        //     </div>
+        // </div>
+
+    }
+
     function createBox(content) {
         div = createEl('div');
         div.textContent = content || '';
-        div.classList.add('notification', 'top-right', 'right-in');
+        addClass(div, 'notification top-right right-in');
         body.appendChild(div);
-        formatBoxesTop();
+        fixBoxOffset();
         (function (div) {
             setTimeout(function () {
-                div.classList.remove('right-in');
-
+                // div.classList.remove('right-in');
+                removeClass(div, 'right-in');
                 setTimeout(function () {
                     div.style.opacity = 0;
-                    formatBoxesTop(div);
+                    fixBoxOffset(div);
                     remove(div);
                     div = null;
                 }, DURATION);
-
             });
         })(div);
     }
@@ -105,7 +165,7 @@
             return target = target || {};
         }
     }
-
+    //create a notification box 
     Homer.prototype.message = function (config) {
         if (!config) {
             throw new Error('you should pass a string or an object as argument!')
@@ -118,7 +178,7 @@
     }
 
     document.addEventListener('click', function (e) {
-        createBox('asdasdasadas');
+        createBox('asdasdsad asdasd asd  asd asd as asd asd asd sad asd as as dasd asd asd asd asd');
     })
     return Homer;
 })

@@ -5,12 +5,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="./iconfont.css">
     <title>Document</title>
     <style>
+        html,
         body {
-            background: teal;
+            margin: 0;
+            padding: 0;
+            height: 100%;
             font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, SimSun, sans-serif;
             font-weight: 400;
+            -webkit-font-smoothing: antialiased;
         }
 
         .notification {
@@ -22,8 +27,38 @@
             background: #fff;
             box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .1);
             transition: opacity .3s, transform .3s, left .3s, right .3s, top .4s, bottom .3s;
+            -ms-transition: opacity .3s, transform .3s, left .3s, right .3s, top .4s, bottom .3s;
             z-index: 2000;
             position: fixed;
+            display: flex;
+        }
+
+        .notification__group {
+            margin-left: 13px;
+        }
+
+        .notification__title {
+            font-weight: 700;
+            font-size: 16px;
+            color: #303133;
+            margin: 0;
+        }
+
+        .notification__closeBtn {
+            position: absolute;
+            top: 18px;
+            right: 15px;
+            cursor: pointer;
+            color: #909399;
+            font-size: 16px;
+        }
+
+        .notification__content {
+            font-size: 14px;
+            line-height: 21px;
+            margin: 6px 0 0;
+            color: #606266;
+            text-align: justify;
         }
 
         .top-right {
@@ -41,7 +76,16 @@
 </head>
 
 <body>
-    <script src="../homer.js"></script>
+    <script src="./homer.js"></script>
+    <!-- <div class="notification">
+        <div class="notification__group">
+            <div class="iconfont icon-close notification__closeBtn"></div>
+            <h2 class="notification__title">这是标题阿斯达岁的萨德阿萨德阿萨德阿萨德阿萨德</h2>
+            <div class="notification__content">
+                    的萨德阿萨德阿萨的萨德阿萨德阿萨的萨德阿萨德阿萨的萨德阿萨德阿萨的萨德阿萨德阿萨的萨德阿萨德阿萨的萨德阿萨德阿萨的萨德阿萨德阿萨的萨德阿萨德阿萨的萨德阿萨德阿萨
+            </div>
+        </div>
+    </div> -->
 </body>
 
 </html>
