@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        body {
+            background: teal;
+            font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, SimSun, sans-serif;
+            font-weight: 400;
+        }
+
+        .notification {
+            width: 330px;
+            padding: 14px 26px 14px 13px;
+            box-sizing: border-box;
+            border-radius: 5px;
+            border: 1px solid #ebeef5;
+            background: #fff;
+            box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .1);
+            transition: opacity .3s, transform .3s, left .3s, right .3s, top .4s, bottom .3s;
+            z-index: 2000;
+            position: fixed;
+        }
+
+        .top-right {
+            right: 0;
+        }
+
+        .left-in {
+            transform: translate(-100%);
+        }
+
+        .right-in {
+            transform: translate(100%);
+        }
+    </style>
+</head>
+
+<body>
+    <script src="../homer.js"></script>
+</body>
+
+</html>
