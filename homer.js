@@ -38,12 +38,18 @@
     }
 
     function fixNotiOffset() {
-        var boxes = _slice.call($$('.notification'));
+        var boxes = _slice
+            .call($$('.notification'))
+            .filter(function (item) {
+                return !item.classList.contains('box-disappearing');
+            })
+
         if (arguments.length) {
             _slice.call(arguments).forEach(function (item) {
                 boxes.splice(boxes.indexOf(item), 1);
             })
         }
+
         var temp;
         boxes.forEach(function (box, index, arr) {
             if (index === 0) {
@@ -57,13 +63,13 @@
         });
     }
 
-    function boxHideHandle(div) {
+    function boxHideHandle(div, duration) {
         div.classList.remove('right-in');
         setTimeout(function () {
             fixNotiOffset(div);
-            remove(div);
-            div = null;
-        }, 4000);
+            div.classList.add('box-disappearing')
+            div.style.opacity = 0;
+        }, FIXTIME + duration);
     }
 
     function buildFragment(str) {
@@ -82,22 +88,32 @@
     }
 
     function buildNoti(title, content) {
-        if (!(title = title.trim()) && !(content = content.trim())) return false;
-        if (title && !content) {
-            content = title;
-            title = '';
-        }
-        title = title || '';
+        title = JSON.stringify(title);
+        content = JSON.stringify(content);
+        if (!title && !content) return false;
+
+        var div = createEl('div');
         var tempStr = '<div class="notification__group">' +
             '<div class="iconfont icon-close notification__closeBtn"></div>' +
-            '<h2 class="notification__title">' + title + '</h2>' +
+            '<h2 class="notification__title">' + (title || '') + '</h2>' +
             '<div class="notification__content">' +
-            '<p>' + content + '</p>' +
+            '<p>' + (content || '') + '</p>' +
             '</div></div>';
-        var div = createEl('div');
+
         div.classList.add('notification');
         div.innerHTML = tempStr;
         return div;
+    }
+
+    function bindTransitionEnd(clsName) {
+        body.addEventListener('transitionend', function (e) {
+            var target = e.target;
+            if (target.classList.contains(clsName)) {
+                if (target.style.opacity === '0') {
+                    remove(target);
+                }
+            }
+        }, false);
     }
 
     function createBox(title, content) {
@@ -107,7 +123,7 @@
         doc.appendChild(div);
         body.appendChild(doc);
         fixNotiOffset();
-        boxHideHandle(div);
+        boxHideHandle(div, 2000);
     }
 
     var Homer = function () {
@@ -133,9 +149,10 @@
             return new Homer()[prop].apply()
         }
     }
-
     document.addEventListener('click', function (e) {
-        createBox('地方撒打算的', 'asdasdsad asdasd asd  asd asd as asd asd asd sad asd as as dasd asd asd asd asd');
+        createBox({
+            a: 1
+        }, [1, 2, 3, 324, 23, 423, 4, 234, 23, 432, 4]);
     }, false);
     return Homer;
 })
