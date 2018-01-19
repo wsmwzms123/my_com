@@ -32,11 +32,15 @@
             el.parentNode.removeChild(el);
         }
     }
-
+    
     function isObject(obj) {
         return !!obj && [].toString.call(obj).slice(8, -1).toLowerCase() == 'object'
     }
-
+    function hideEl(el) {
+        if (el) {
+            el.style.opacity = 0;
+        }
+    }
     function fixNotiOffset() {
         var boxes = _slice
             .call($$('.notification'))
