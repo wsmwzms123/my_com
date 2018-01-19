@@ -6,7 +6,7 @@
 })(this, function () {
     var SPACE = ' ',
         TOP, BOTTOM,
-        DELAY = 300,
+        FIXTIME = 300,
         DURATION = 4000,
         AUTO = true,
         _slice = Array.prototype.slice,
@@ -37,53 +37,12 @@
         return !!obj && [].toString.call(obj).slice(8, -1).toLowerCase() == 'object'
     }
 
-    //compatibility for IE9 
-    function addClass(el, cls) {
-        if (!el || !cls || !(cls = cls.trim())) return false;
-        if (el.classList) {
-            if (cls.indexOf(SPACE) > -1) {
-                cls.split(/\s+/).forEach(function (item) {
-                    el.classList.add(item);
-                })
-            } else {
-                el.classList.add(cls);
-            }
-        } else {
-            var tempClass = SPACE + (el.getAttribute('class') || '').trim() + SPACE;
-            if (tempClass.indexOf(SPACE + cls + SPACE) < 0) {
-                el.setAttribute('class', (tempClass + cls.trim()));
-            }
-        }
-    }
-    function removeClass(el, cls) {
-        if (!el || !cls || !(cls = cls.trim())) return false;
-        if (el.classList) {
-            if (cls.indexOf(SPACE) > -1) {
-                cls.split(/\s+/).forEach(function (item) {
-                    el.classList.remove(item);
-                })
-            } else {
-                el.classList.remove(cls);
-            }
-            if (!el.classList.length) el.removeAttribute('class');
-        } else {
-            var tempClass = SPACE + (el.getAttribute('class') || '').trim() + SPACE;
-            cls = SPACE + cls + SPACE;
-            while (tempClass.indexOf(cls) > -1) {
-                tempClass = tempClass.replace(cls, ' ');
-            }
-            if (tempClass) {
-                el.setAttribute('class', tempClass);
-            } else {
-                el.removeAttribute('class');
-            }
-
-        }
-    }
-    function fixBoxOffset(exclude) {
+    function fixNotiOffset() {
         var boxes = _slice.call($$('.notification'));
-        if (exclude) {
-            boxes.splice(boxes.indexOf(exclude), 1);
+        if (arguments.length) {
+            _slice.call(arguments).forEach(function (item) {
+                boxes.splice(boxes.indexOf(item), 1);
+            })
         }
         var temp;
         boxes.forEach(function (box, index, arr) {
@@ -98,13 +57,20 @@
         });
     }
 
-    function createStyles(str) {
+    function boxHideHandle(div) {
+        div.classList.remove('right-in');
+        setTimeout(function () {
+            fixNotiOffset(div);
+            remove(div);
+            div = null;
+        }, 4000);
+    }
+
+    function buildFragment(str) {
         if (!isString(str)) return false;
         var node,
             div = createEl('div'),
-            fragment = createFragment(),
-            style = $('style') || createEl('style'),
-            hasStyle = !!$('style');
+            fragment = createFragment();
         div.innerHTML = str;
         while (node = div.childNodes[0]) {
             fragment.appendChild(node);
@@ -116,41 +82,32 @@
     }
 
     function buildNoti(title, content) {
-        if (!title && !content) return false;
+        if (!(title = title.trim()) && !(content = content.trim())) return false;
         if (title && !content) {
             content = title;
             title = '';
         }
-        // <div class="notification">
-        //     <div class="notification__group">
-        //         <div class="iconfont icon-close notification__closeBtn"></div>
-        //         <h2 class="notification__title">这是标题阿斯达岁的萨德阿萨德阿萨德阿萨德阿萨德</h2>
-        //         <div class="notification__content">
-        //                 的萨德阿萨德阿萨的萨德阿萨德阿萨的萨德阿萨德阿萨的萨德阿萨德阿萨的萨德阿萨德阿萨的萨德阿萨德阿萨的萨德阿萨德阿萨的萨德阿萨德阿萨的萨德阿萨德阿萨的萨德阿萨德阿萨
-        //         </div>
-        //     </div>
-        // </div>
-
+        title = title || '';
+        var tempStr = '<div class="notification__group">' +
+            '<div class="iconfont icon-close notification__closeBtn"></div>' +
+            '<h2 class="notification__title">' + title + '</h2>' +
+            '<div class="notification__content">' +
+            '<p>' + content + '</p>' +
+            '</div></div>';
+        var div = createEl('div');
+        div.classList.add('notification');
+        div.innerHTML = tempStr;
+        return div;
     }
 
-    function createBox(content) {
-        div = createEl('div');
-        div.textContent = content || '';
-        addClass(div, 'notification top-right right-in');
-        body.appendChild(div);
-        fixBoxOffset();
-        (function (div) {
-            setTimeout(function () {
-                // div.classList.remove('right-in');
-                removeClass(div, 'right-in');
-                setTimeout(function () {
-                    div.style.opacity = 0;
-                    fixBoxOffset(div);
-                    remove(div);
-                    div = null;
-                }, DURATION);
-            });
-        })(div);
+    function createBox(title, content) {
+        var div = buildNoti(title, content);
+        div.classList.add('top-right', 'right-in');
+        var doc = createFragment();
+        doc.appendChild(div);
+        body.appendChild(doc);
+        fixNotiOffset();
+        boxHideHandle(div);
     }
 
     var Homer = function () {
@@ -178,7 +135,7 @@
     }
 
     document.addEventListener('click', function (e) {
-        createBox('asdasdsad asdasd asd  asd asd as asd asd asd sad asd as as dasd asd asd asd asd');
-    })
+        createBox('地方撒打算的', 'asdasdsad asdasd asd  asd asd as asd asd asd sad asd as as dasd asd asd asd asd');
+    }, false);
     return Homer;
 })
