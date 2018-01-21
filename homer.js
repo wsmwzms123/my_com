@@ -32,15 +32,19 @@
             el.parentNode.removeChild(el);
         }
     }
-    
+
     function isObject(obj) {
         return !!obj && [].toString.call(obj).slice(8, -1).toLowerCase() == 'object'
     }
+
     function hideEl(el) {
         if (el) {
+            fixNotiOffset(el);
+            el.classList.add('box-disappearing')
             el.style.opacity = 0;
         }
     }
+
     function fixNotiOffset() {
         var boxes = _slice
             .call($$('.notification'))
@@ -69,11 +73,11 @@
 
     function boxHideHandle(div, duration) {
         div.classList.remove('right-in');
-        setTimeout(function () {
-            fixNotiOffset(div);
-            div.classList.add('box-disappearing')
-            div.style.opacity = 0;
-        }, FIXTIME + duration);
+        if (duration && duration > 0) {
+            setTimeout(function () {
+                hideEl(div)
+            }, FIXTIME + duration);
+        }
     }
 
     function buildFragment(str) {
@@ -119,7 +123,14 @@
             }
         }, false);
     }
-
+    function closeBox() {
+        body.addEventListener('click', function (e) {
+            var target = e.target;
+            if (target.classList.contains('notification__closeBtn')) {
+                hideEl(target.parentNode.parentNode);
+            }
+        })
+    }
     function createBox(title, content) {
         var div = buildNoti(title, content);
         div.classList.add('top-right', 'right-in');
@@ -127,7 +138,7 @@
         doc.appendChild(div);
         body.appendChild(doc);
         fixNotiOffset();
-        boxHideHandle(div, 2000);
+        boxHideHandle(div);
     }
 
     var Homer = function () {
@@ -153,6 +164,8 @@
             return new Homer()[prop].apply()
         }
     }
+    bindTransitionEnd('notification');
+    closeBox();
     document.addEventListener('click', function (e) {
         createBox({
             a: 1
