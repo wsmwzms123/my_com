@@ -10,9 +10,24 @@
     function isPlainObject(obj) {
         return _toString.call(obj).slice(8, -1).toLowerCase() === 'object';
     }
+
     function isFunction(fn) {
         return typeof fn === 'function';
     }
+
+    function simpleObserver(obj, key, fn) {
+        var oldVal = obj.key;
+        Object.defineProperty(obj, key, {
+            get: function () {
+                return oldVal;
+            },
+            set: function (newVal) {
+                oldVal = newVal;
+                fn.call(obj);
+            }
+        })
+    }
+
     function _Homer(options) {
         if (!(this instanceof _Homer)) {
             return new _Homer(options);
@@ -26,17 +41,21 @@
         var hm = this;
         hm.mounted = false;
         if (!(isPlainObject(options))) {
-            throw new Error('options should be an object');
+            throw new Error('options should be an object!');
         }
         if (options.type) {
             hm.mounted = true;
             var type = options.type;
-            delete options.type;
-            hm[type](options);
+            if (hm[type] && typeof hm[type] === 'function') {
+                delete options.type;
+                hm.options = options;
+                hm[type](options);
+            }
         }
     }
     _Homer.prototype.createBox = function (options) {
-        
+        var hm = this;
+
     }
     return _Homer;
 })
