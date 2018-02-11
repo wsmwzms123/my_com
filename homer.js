@@ -6,13 +6,18 @@
 })(this, function () {
 
     var _toString = Object.prototype.toString;
-    
+
     function isPlainObject(obj) {
         return _toString.call(obj).slice(8, -1).toLowerCase() === 'object';
     }
 
-    function isFunction(fn) {
-        return typeof fn === 'function';
+    function def(obj, key, val, enumberable) {
+        Object.defineProperty(obj, key, {
+            val: val,
+            writable: true,
+            configurable: true,
+            enumerable: !!enumberable
+        })
     }
 
     function simpleObserver(obj, key, fn) {
@@ -22,10 +27,35 @@
                 return oldVal;
             },
             set: function (newVal) {
-                oldVal = newVal;
-                fn.call(obj);
+                if (newVal !== oldVal) {
+                    oldVal = newVal;
+                    fn.call(obj);
+                }
             }
         })
+    }
+
+    function simpleArrayObserver(arr, fn) {
+        if (Array.isArray(arr) && arr.length) return false;
+        var arrayProto = Array.prototype;
+        var arrayMethods = Object.create(arrayProto);
+        ['push',
+            'pop',
+            'shift',
+            'unshift',
+            'splice',
+            'sort',
+            'reverse'
+        ].forEach(function (method) {
+            var original = arrayProto[method];
+            def(arrayMethods, method, function changed() {
+                var args = _slice.call(arguments);
+                var result = original.apply(this, args);
+                fn.apply(this);
+                return result
+            })
+        })
+
     }
 
     function _Homer(options) {
@@ -44,9 +74,9 @@
             throw new Error('options should be an object!');
         }
         if (options.type) {
-            hm.mounted = true;
             var type = options.type;
             if (hm[type] && typeof hm[type] === 'function') {
+                hm.mounted = true;
                 delete options.type;
                 hm.options = options;
                 hm[type](options);
